@@ -1,4 +1,4 @@
-module github.com/agnivade/levenshtein
+module github.com/pointlander/levenshtein
 
 go 1.13
 

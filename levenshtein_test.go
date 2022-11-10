@@ -3,10 +3,19 @@ package levenshtein_test
 import (
 	"testing"
 
-	agnivade "github.com/agnivade/levenshtein"
 	arbovm "github.com/arbovm/levenshtein"
 	dgryski "github.com/dgryski/trifles/leven"
+	agnivade "github.com/pointlander/levenshtein"
 )
+
+func toInt(s string) []int {
+	t := []rune(s)
+	r := make([]int, len(t))
+	for i, c := range t {
+		r[i] = int(c)
+	}
+	return r
+}
 
 func TestSanity(t *testing.T) {
 	tests := []struct {
@@ -27,7 +36,7 @@ func TestSanity(t *testing.T) {
 		{"a very long string that is meant to exceed", "another very long string that is meant to exceed", 6},
 	}
 	for i, d := range tests {
-		n := agnivade.ComputeDistance(d.a, d.b)
+		n := agnivade.ComputeDistance(toInt(d.a), toInt(d.b))
 		if n != d.want {
 			t.Errorf("Test[%d]: ComputeDistance(%q,%q) returned %v, want %v",
 				i, d.a, d.b, n, d.want)
@@ -48,7 +57,7 @@ func TestUnicode(t *testing.T) {
 		{"།་གམ་འས་པ་་མ།", "།་གམའས་པ་་མ", 2},
 	}
 	for i, d := range tests {
-		n := agnivade.ComputeDistance(d.a, d.b)
+		n := agnivade.ComputeDistance(toInt(d.a), toInt(d.b))
 		if n != d.want {
 			t.Errorf("Test[%d]: ComputeDistance(%q,%q) returned %v, want %v",
 				i, d.a, d.b, n, d.want)
@@ -78,7 +87,7 @@ func BenchmarkSimple(b *testing.B) {
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				tmp = agnivade.ComputeDistance(test.a, test.b)
+				tmp = agnivade.ComputeDistance(toInt(test.a), toInt(test.b))
 			}
 		})
 	}
@@ -103,7 +112,7 @@ func BenchmarkAll(b *testing.B) {
 		b.Run(test.name, func(b *testing.B) {
 			b.Run("agniva", func(b *testing.B) {
 				for n := 0; n < b.N; n++ {
-					tmp = agnivade.ComputeDistance(test.a, test.b)
+					tmp = agnivade.ComputeDistance(toInt(test.a), toInt(test.b))
 				}
 			})
 			b.Run("arbovm", func(b *testing.B) {
